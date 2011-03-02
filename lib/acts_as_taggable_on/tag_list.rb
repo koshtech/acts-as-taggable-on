@@ -7,6 +7,7 @@ module ActsAsTaggableOn
 
     def initialize(*args)
       add(*args)
+      #baba(*args)
     end
   
     ##
@@ -55,6 +56,28 @@ module ActsAsTaggableOn
       extract_and_apply_options!(names)
       delete_if { |name| names.include?(name) }
       self
+    end
+    
+    ##
+    # Search the id of the tags listed
+    #
+    # Example:
+    #   tag_list = TagList.new("Round", "Square")
+    #   tag_list.with_id # {1 => "Round", 2 => "Square"}
+    #   tag_list.with_id[1] # => "Round"
+    def with_id
+      @tag = {}
+      @t = []
+      
+      self.each do |tag|
+        @t << Tag.find_by_name(tag)
+      end
+      
+      @t.each do |t|
+        @tag[t.id] = t.name
+      end
+      
+      @tag
     end
 
     ##
