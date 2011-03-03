@@ -122,6 +122,23 @@ module ActsAsTaggableOn::Taggable
                :order      => options[:order],
                :readonly   => false)
       end
+      
+      #
+      # Example:
+      #   User.tagged_with_id("1") Method to be passed id tag instead of tag name
+      def tagged_with_id(id)
+        return {} if id.empty?
+        
+        tag = ActsAsTaggableOn::Tag.find_by_id(id.to_i)
+        
+        tagging  = "JOIN #{ActsAsTaggableOn::Tagging.table_name} " +
+                            "  ON #{ActsAsTaggableOn::Tagging.table_name}.taggable_id = #{table_name}.#{primary_key}" +
+                            " AND #{ActsAsTaggableOn::Tagging.table_name}.taggable_type = #{quote_value(base_class.name)}" +
+                            " AND #{ActsAsTaggableOn::Tagging.table_name}.tag_id = #{tag.id}"
+        
+        scoped(:joins => tagging)
+                
+      end
 
       def is_taggable?
         true
